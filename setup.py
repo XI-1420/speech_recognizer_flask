@@ -8,12 +8,12 @@ from speech_rating_app import rate
 import psycopg2
 
 ALLOWED_EXTENSIONS = {'wav'}
-app = Flask(__name__)
+setup = Flask(__name__)
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:5432@localhost/xise'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-db = SQLAlchemy(app)
+setup.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+setup.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+db = SQLAlchemy(setup)
 
 
 class Employee(db.Model):
@@ -30,7 +30,7 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@ app.route('/speech/audio/rating/<id>', methods=['GET'])
+@ setup.route('/speech/audio/rating/<id>', methods=['GET'])
 def audio_rating(id):
     id = request.view_args['id']
 
@@ -42,7 +42,7 @@ def audio_rating(id):
     return jsonify({"rating": rating}), 200
 
 
-@ app.route('/speech/audio/upload', methods=['POST'])
+@ setup.route('/speech/audio/upload', methods=['POST'])
 def audio_upload():
     if 'file' not in request.files:
         return jsonify('No file present'), 400
