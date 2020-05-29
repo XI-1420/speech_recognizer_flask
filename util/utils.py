@@ -23,17 +23,13 @@ def avg_spoken_words_count(seconds):
     return avg_words_per_minute / avg_spoken_words
 
 
-async def rate_speech_on_fluency(fut, words_count):
+def rate_speech_on_fluency(words_count):
     avg_words = 45
     if abs(avg_words - words_count) <= 5:
-        fut.set_result(1)
-        # return 1
+        return 1
     elif words_count >= 70 or words_count <= 30:
-        fut.set_result(0)
-        # return 0
+        return 0
     elif words_count >= 60 or words_count <= 35:
-        # return 0.5
-        fut.set_result(0.5)
+        return 0.5
     elif words_count >= 55 or words_count <= 40:
-        # return 0.7
-        fut.set_result(0.7)
+        return 0.7

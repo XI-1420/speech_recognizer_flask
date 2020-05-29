@@ -2,7 +2,6 @@ from flask import Flask, flash, render_template, request, jsonify, redirect, ses
 from flask_sqlalchemy import SQLAlchemy
 import speech_recognition as sr
 import os
-import asyncio
 from sqlalchemy.dialects.sqlite import BLOB
 from sqlalchemy import Column, Integer, String
 from cloud_storage import upload, download
@@ -40,7 +39,7 @@ def audio_rating(id):
     employee = db.session.query(Employee).filter_by(id=id).first()
     file = download(employee.speech_file)
 
-    rating = asyncio.rate(rate(employee.speech_file))
+    rating = rate(employee.speech_file)
     os.remove(employee.speech_file)
     return jsonify({"rating": rating}), 200
 

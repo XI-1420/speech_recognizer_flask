@@ -14,7 +14,7 @@ VERB_CODES = {
 }
 
 
-async def rate_unnecessary_fillers(fut, data):
+def rate_unnecessary_fillers(data):
     # yeah,you know,like
     # I have worked on tech like java, like spring boot like mysql
     words = data.split()
@@ -25,14 +25,11 @@ async def rate_unnecessary_fillers(fut, data):
         if word.lower() == "you know".lower():
             count = count + 1
     if count >= 3:
-        # return 0
-        fut.set_result(0)
+        return 0
     elif count == 2:
-        # return 0.6
-        fut.set_result(0.6)
+        return 0.6
     else:
-        # return 1
-        fut.set_result(1)
+        return 1
 
 
 def logs_after(a, b):

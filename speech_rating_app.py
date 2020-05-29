@@ -9,10 +9,9 @@ import asyncio
 filename = "speech.txt"
 
 
-async def rate(file):
+def rate(file):
 
     if speech_to_text(file):
-        loop = asyncio.get_running_loop()
         data = utils.read_file(filename)
         words_count = utils.total_words(data)
         logs = '='*44+'\n'
@@ -20,17 +19,11 @@ async def rate(file):
             str(words_count)+'\n'
         logs += '='*44+'\n'
 
-        fut_speech_fluency = loop.create_future()
-        loop.create_task(utils.rate_speech_on_fluency(
-            fut_speech_fluency, words_count))
-        fluency_rating = await fut_speech_fluency
+        fluency_rating = utils.rate_speech_on_fluency(words_count)
 
         spelling_rating = rate_spelling(data, words_count)
 
-        fut_unnecessary_filler = loop.create_future()
-        loop.create_task(rate_unnecessary_fillers(
-            fut_unnecessary_filler, data))
-        filler_rating = await fut_unnecessary_filler
+        filler_rating = rate_unnecessary_fillers(data)
 
         grammar_rating = rate_grammar(data)
 
