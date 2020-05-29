@@ -1,8 +1,6 @@
 from flask import Flask, flash, render_template, request, jsonify, redirect, session, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
-import speech_recognition as sr
 import os
-from sqlalchemy.dialects.sqlite import BLOB
 from sqlalchemy import Column, Integer, String
 from cloud_storage import upload, download
 from werkzeug.datastructures import ImmutableMultiDict
