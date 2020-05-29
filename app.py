@@ -1,8 +1,8 @@
 from flask import Flask, flash, render_template, request, jsonify, redirect, session, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
-import asyncio
 import speech_recognition as sr
 import os
+import asyncio
 from sqlalchemy.dialects.sqlite import BLOB
 from sqlalchemy import Column, Integer, String
 from cloud_storage import upload, download
@@ -40,7 +40,7 @@ def audio_rating(id):
     employee = db.session.query(Employee).filter_by(id=id).first()
     file = download(employee.speech_file)
 
-    rating = asyncio.run(rate(employee.speech_file))
+    rating = asyncio.rate(rate(employee.speech_file))
     os.remove(employee.speech_file)
     return jsonify({"rating": rating}), 200
 
@@ -67,7 +67,7 @@ def audio_upload():
         return jsonify("No wav file found"), 400
 
 
-if __name__ == "__main__":
-    app.secret_key = 'super secret key'
-    # app.config['SESSION_TYPE'] = 'filesystem'
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.secret_key = 'super secret key'
+#     # app.config['SESSION_TYPE'] = 'filesystem'
+#     app.run(debug=True)
