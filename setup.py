@@ -35,7 +35,7 @@ def audio_rating(id):
     id = request.view_args['id']
 
     employee = db.session.query(Employee).filter_by(id=id).first()
-    file = download(employee.speech_file)
+    # file = download(employee.speech_file)
 
     rating = rate(employee.speech_file)
     os.remove(employee.speech_file)
@@ -46,25 +46,25 @@ def audio_rating(id):
 def audio_upload():
     if 'file' not in request.files:
         return jsonify('No file present'), 400
-    file = request.files['file']
+    f = request.files['file']
 
-    if file.filename == '':
+    if f.filename == '':
         return jsonify('No selected file'), 400
 
-    if allowed_file(file.filename):
-        filename = upload(file)
-        employee = Employee(filename)
+    if allowed_file(f.filename):
+        # filename = upload(file)
+        # open("files/"+f.filename, 'w').write(f)
+        f.save(f.filename)
+        employee = Employee(f.filename)
         db.session.add(employee)
         db.session.commit()
         inserted_id = employee.id
-        # obj = wave.open('files/hindi_included.wav', 'r')
+        print(employee.speech_file)
 
         return jsonify({"id": inserted_id}), 201
     else:
         return jsonify("No wav file found"), 400
 
 
-# if __name__ == "__main__":
-#     app.secret_key = 'super secret key'
-#     # app.config['SESSION_TYPE'] = 'filesystem'
-#     app.run(debug=True)
+if __name__ == "__main__":
+    setup.run(debug=True)
