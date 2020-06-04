@@ -30,13 +30,13 @@ class SpeechRaterEncoder(JSONEncoder):
         return o.__dict__
 
 
-def rate(file):
+def rate(file, duration):
 
     if speech_to_text(file):
         data = utils.read_file(filename)
         words_count = utils.total_words(data)
-
-        fluency_rating = utils.rate_speech_on_fluency(words_count)
+        print("actual words spoken: ", words_count)
+        fluency_rating = utils.rate_speech_on_fluency(words_count, duration)
 
         spelling_rating = rate_spelling(data, words_count)
 

@@ -1,11 +1,6 @@
 import speech_recognition as sr
 
 
-# audio_file = "normal.wav"
-# audio_file = "files/harshit_slow.wav"
-# audio_file = "very_slow.wav"
-
-
 def speech_to_text(audio_file):
     r = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:

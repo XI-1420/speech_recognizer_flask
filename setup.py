@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import json
 from sqlalchemy import Column, Integer, String, Float
-from noise_reduction import *
+
 from werkzeug.datastructures import ImmutableMultiDict
 from speech_rating_app import *
 import psycopg2
@@ -11,9 +11,9 @@ import psycopg2
 ALLOWED_EXTENSIONS = {'wav'}
 setup = Flask(__name__)
 
-setup.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:5432@localhost/xise'
+# setup.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:5432@localhost/xise'
 setup.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# setup.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+setup.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(setup)
 
 
@@ -26,14 +26,16 @@ class Employee(db.Model):
     fillerRating = Column(Float)
     grammarRating = Column(Float)
     totalRating = Column(Float)
+    duration = Column(Float)
 
-    def __init__(self, speech_file, fluencyRating, spellingRating, fillerRating, grammarRating, totalRating):
+    def __init__(self, speech_file, fluencyRating, spellingRating, fillerRating, grammarRating, totalRating, duration):
         self.speech_file = speech_file
         self.fluencyRating = fluencyRating
         self.spellingRating = spellingRating
         self.fillerRating = fillerRating
         self.grammarRating = grammarRating
         self.totalRating = totalRating
+        self.duration = duration
 
 
 def allowed_file(filename):
@@ -47,14 +49,14 @@ def audio_rating(id):
 
     employee = db.session.query(Employee).filter_by(id=id).first()
     if employee.totalRating == -1:
-        speech_rater = rate(employee.speech_file)
+        speech_rater = rate(employee.speech_file, employee.duration)
         r_json = json.loads(speech_rater)
         os.remove(employee.speech_file)
         employee.fluencyRating = r_json["fluencyRating"]
         employee.spellingRating = r_json["spellingRating"]
         employee.fillerRating = r_json["fillerRating"]
         employee.grammarRating = r_json["grammarRating"]
-        employee.totalRating = cr_json["totalRating"]
+        employee.totalRating = r_json["totalRating"]
         db.session.commit()
         return speech_rater, 200
     return jsonify_object(employee), 200
@@ -76,9 +78,10 @@ def audio_upload():
     if 'file' not in request.files:
         return jsonify('No file present'), 400
     f = request.files['file']
+    duration = request.args['duration']
     if allowed_file(f.filename):
         f.save(f.filename)
-        employee = Employee(f.filename, -1, -1, -1, -1, -1)
+        employee = Employee(f.filename, -1, -1, -1, -1, -1, duration)
         db.session.add(employee)
         db.session.commit()
         return jsonify({"id": employee.id}), 201
