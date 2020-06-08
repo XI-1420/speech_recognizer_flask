@@ -2,6 +2,7 @@ from flask import Flask, flash, render_template, request, jsonify, redirect, ses
 from flask_sqlalchemy import SQLAlchemy
 import os
 import json
+from speech_converter import *
 from sqlalchemy import Column, Integer, String, Float
 
 from werkzeug.datastructures import ImmutableMultiDict
@@ -49,16 +50,23 @@ def audio_rating(id):
 
     employee = db.session.query(Employee).filter_by(id=id).first()
     if employee.totalRating == -1:
-        speech_rater = rate(employee.speech_file, employee.duration)
-        r_json = json.loads(speech_rater)
-        os.remove(employee.speech_file)
-        employee.fluencyRating = r_json["fluencyRating"]
-        employee.spellingRating = r_json["spellingRating"]
-        employee.fillerRating = r_json["fillerRating"]
-        employee.grammarRating = r_json["grammarRating"]
-        employee.totalRating = r_json["totalRating"]
-        db.session.commit()
-        return speech_rater, 200
+        result = speech_to_text(employee.speech_file)
+        if result == "Success":
+
+            speech_rater = rate(employee.duration)
+            r_json = json.loads(speech_rater)
+            os.remove(employee.speech_file)
+            employee.fluencyRating = r_json["fluencyRating"]
+            employee.spellingRating = r_json["spellingRating"]
+            employee.fillerRating = r_json["fillerRating"]
+            employee.grammarRating = r_json["grammarRating"]
+            employee.totalRating = r_json["totalRating"]
+            db.session.commit()
+            return speech_rater, 200
+        else:
+            # error_code = {"error": str(result)}
+            # return json.dumps(error_code), 400
+            return str(result), 400
     return jsonify_object(employee), 200
 
 

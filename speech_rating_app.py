@@ -30,23 +30,23 @@ class SpeechRaterEncoder(JSONEncoder):
         return o.__dict__
 
 
-def rate(file, duration):
+def rate(duration):
 
-    if speech_to_text(file):
-        data = utils.read_file(filename)
-        words_count = utils.total_words(data)
-        print("actual words spoken: ", words_count)
-        fluency_rating = utils.rate_speech_on_fluency(words_count, duration)
+    # if speech_to_text(file):
+    data = utils.read_file(filename)
+    words_count = utils.total_words(data)
+    print("actual words spoken: ", words_count)
+    fluency_rating = utils.rate_speech_on_fluency(words_count, duration)
 
-        spelling_rating = rate_spelling(data, words_count)
+    spelling_rating = rate_spelling(data, words_count)
 
-        filler_rating = rate_unnecessary_fillers(data)
+    filler_rating = rate_unnecessary_fillers(data)
 
-        grammar_rating = rate_grammar(data)
+    grammar_rating = rate_grammar(data)
 
-        total_rating = fluency_rating + spelling_rating + filler_rating + grammar_rating
+    total_rating = fluency_rating + spelling_rating + filler_rating + grammar_rating
 
-        rating = SpeechRater(fluency_rating, spelling_rating,
-                             filler_rating, grammar_rating, total_rating)
+    rating = SpeechRater(fluency_rating, spelling_rating,
+                         filler_rating, grammar_rating, total_rating)
 
-        return json.dumps(rating, cls=SpeechRaterEncoder)
+    return json.dumps(rating, cls=SpeechRaterEncoder)
