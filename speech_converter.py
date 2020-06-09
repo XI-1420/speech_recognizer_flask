@@ -17,5 +17,5 @@ def speech_to_text(audio_file):
 
     except ValueError as e:
         return e
-    except:
-        return "Connection failed or server not provided"
+    except Exception as e:
+        return e

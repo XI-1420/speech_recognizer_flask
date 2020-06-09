@@ -64,9 +64,8 @@ def audio_rating(id):
             db.session.commit()
             return speech_rater, 200
         else:
-            # error_code = {"error": str(result)}
-            # return json.dumps(error_code), 400
-            return str(result), 400
+
+            return json.dumps({"error": str(result)}), 400
     return jsonify_object(employee), 200
 
 
